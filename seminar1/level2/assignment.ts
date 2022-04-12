@@ -1,3 +1,7 @@
+enum Sopt { 
+    OB = 'ob', YB = 'yb' 
+}
+
 interface Member {
     name: string;
     group: string;
@@ -13,49 +17,50 @@ const dinner: Dinner = {
     member: [
         {
             name: '채정아',
-            group: 'ob'
+            group: Sopt.OB
         },
         {
             name: '김채은',
-            group: 'yb'
+            group: Sopt.YB
         },
         {
             name: '김경린',
-            group: 'yb'
+            group: Sopt.YB
         },
         {
             name: '황서경',
-            group: 'yb'
+            group: Sopt.YB
         },
         {
             name: '김동재',
-            group: 'yb'
+            group: Sopt.YB
         }
         ,
         {
             name: '김루희',
-            group: 'ob'
+            group: Sopt.OB
         }
         ,
         {
             name: '박진수',
-            group: 'ob'
+            group: Sopt.OB
         }
     ],
-    shuffle(array: Member[]) {
+    shuffle(array) {
         array.sort(() => Math.random() - 0.5);
         return array;
     },
-    organize(array: Member[]) {
-        let dinnerMember: string[] = [];
-        let random_member: string;
+    organize(array) {
+        const dinnerMember: string[] = [];
 
-        this.shuffle(array);;
+        this.shuffle(array);
 
-        for(let group of ['ob', 'yb']) {
-            random_member = array.filter((member: Member) => member.group === group)[0].name;
-            dinnerMember.push(random_member);
-        }
+        const ob_member = array.filter((member) => member.group === Sopt.OB)[0].name;
+        const yb_member = array.filter((member) => member.group === Sopt.YB)[0].name;
+
+        dinnerMember.push(ob_member);
+        dinnerMember.push(yb_member);
+        
         console.log(`오늘의 저녁 식사 멤버는 ${dinnerMember[0]}, ${dinnerMember[1]}`);
     }
 };
