@@ -2,9 +2,7 @@ import { PostBaseResponseDto } from "../interfaces/common/PostBaseResponse";
 import { UserCreateDto } from "../interfaces/user/UserCreateDto";
 import { UserResponseDto } from "../interfaces/user/UserResponseDto";
 import { UserUpdateDto } from "../interfaces/user/UserUpdateDto";
-import util from "../modules/util";
 import User from "../models/User";
-import statusCode from "../modules/statusCode";
 
 const createUser = async (userCreateDto: UserCreateDto): Promise<PostBaseResponseDto> => { // 퀴즈: 여기 반환타입으로 PostBaseResponseDto로쓰면 에러 -> async함수여서 기본적으로 promise반환하기때문에,
     try {
