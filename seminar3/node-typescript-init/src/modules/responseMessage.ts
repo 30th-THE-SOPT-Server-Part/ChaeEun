@@ -14,7 +14,11 @@ const message = {
     READ_POST_SUCCESS: '게시글 조회 성공',
     CREATE_POST_SUCCESS: '게시글 생성 성공',
     DELETE_POST_SUCCESS: '게시글 삭제성공',
-    UPDATE_POST_SUCCESS: '게시글 업데이트 성공'
+    UPDATE_POST_SUCCESS: '게시글 업데이트 성공',
+
+    //리뷰
+    CREATE_REVIEW_SUCCESS: '리뷰 작성 성공',
+    READ_REVIEW_SUCCESS: '리뷰 조회 성공'
 }
 
 export default message;
