@@ -15,6 +15,10 @@ const UserSchema = new mongoose.Schema({
         required: true,
         unique: true //고유하다
     },
+    password: {
+        type: String,
+        required: true,
+    },
     age: {
         type: Number
         //들어오든말든
