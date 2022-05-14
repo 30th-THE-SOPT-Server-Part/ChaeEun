@@ -8,6 +8,10 @@ import util from "../modules/util";
 import { UserService } from "../services";
 import { UserUpdateDto } from "../interfaces/user/UserUpdateDto";
 import User from "../models/User";
+import { validationResult } from "express-validator";
+import getToken from "../modules/jwtHandler";
+import { UserSignInDto } from "../interfaces/user/UserSignInDto";
+import { PostBaseResponseDto } from "../interfaces/common/PostBaseResponse";
 
     /**
  *  @route POST /user
@@ -17,12 +21,24 @@ import User from "../models/User";
 
 
 const createUser = async (req: Request, res: Response) => {
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, message.BAD_REQUEST));
+    }
+
     //컨트롤러 로직 작성
     const userCreateDto: UserCreateDto = req.body; // req.body 받아옴
 
     try {
-        //서비스호출
-        const data = await UserService.createUser(userCreateDto);
+        const result = await UserService.createUser(userCreateDto);
+        if (!result) return res.status(statusCode.CONFLICT).send(util.fail(statusCode.CONFLICT, message.PASSWORD_DUPLICATED));
+
+        const accessToken = getToken(result._id);
+        
+        const data = {
+            _id: result._id,
+            accessToken
+        };
         
         //response 던지기
         res.status(statusCode.CREATED).send(util.success(statusCode.CREATED, message.CREATE_USER_SUCCESS, data));
@@ -35,6 +51,42 @@ const createUser = async (req: Request, res: Response) => {
     }
 
 }
+
+/**
+ *  @route POST /user/signin
+ *  @desc signin User
+ *  @access Public
+ */
+ const signInUser = async (req: Request, res: Response) => {
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, message.BAD_REQUEST));
+    }
+
+    const userSignInDto: UserSignInDto = req.body;
+    
+    try {
+        const result = await UserService.signInUser(userSignInDto);
+
+        if (!result) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, message.NOT_FOUND));
+        else if (result === 401) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, message.INVALID_PASSWORD));
+
+        //accessToken을 만들어서 클라이언트에 준다. user의 아이디를 getToken에 넣어준다.
+        const accessToken = getToken((result as PostBaseResponseDto)._id);
+
+        const data = {
+            _id: (result as PostBaseResponseDto)._id,
+            accessToken
+        }
+
+        res.status(statusCode.OK).send(util.success(statusCode.OK, message.SIGNIN_USER_SUCCESS, data));
+    } catch (e) {
+        console.log(error);
+        // 서버 내부에서 오류 발생
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, message.INTERNAL_SERVER_ERROR));
+    }
+}
+
 
     /**
  *  @route PUT /user/:userId
@@ -102,7 +154,8 @@ const deleteUser = async (req: Request, res: Response) => {
 
 export default {
     createUser,
+    signInUser,
     updateUser,
     findUserById,
-    deleteUser
+    deleteUser,
 }

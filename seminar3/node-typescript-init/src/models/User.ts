@@ -1,5 +1,5 @@
 import mongoose from "mongoose"; //몽구스 불러오기
-import { UserInfo } from "../interfaces/user/UserInfo";
+import { UserInfo } from "../interfaces/user/Userinfo";
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -14,6 +14,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true //고유하다
+    },
+    password: {
+        type: String,
+        required: true,
     },
     age: {
         type: Number
