@@ -3,6 +3,7 @@ import { validationResult } from "express-validator";
 import { MovieCommentCreateDto } from "../interfaces/movie/MovieCommentCreateDto";
 import { MovieCommentUpdateDto } from "../interfaces/movie/MovieCommentUpdateDto";
 import { MovieCreateDto } from "../interfaces/movie/MovieCreateDto";
+import { MovieOptionType } from "../interfaces/movie/MovieOptionType";
 import message from "../modules/responseMessage";
 import statusCode from "../modules/statusCode";
 import util from "../modules/util";
@@ -11,7 +12,7 @@ import MovieService from "../services/MovieService";
 /**
  *  @route POST /movie
  *  @desc Create Movie
- *  @access Public
+ *  @access public
  */
 const createMovie = async (req: Request, res: Response) => {
     const error = validationResult(req);
@@ -34,7 +35,7 @@ const createMovie = async (req: Request, res: Response) => {
 /**
  *  @route POST /movie/:movieId/comment
  *  @desc Create Movie Comment
- *  @access Public
+ *  @access public
  */
 const createMovieComment = async (req: Request, res: Response) => {
     const error = validationResult(req);
@@ -57,9 +58,9 @@ const createMovieComment = async (req: Request, res: Response) => {
 }
 
 /**
- *  @route POST /movie/:movieId
+ *  @route GET /movie/:movieId
  *  @desc Get Movie Comment
- *  @access Public
+ *  @access public
  */
 const getMovie = async (req: Request, res: Response) => {
     const { movieId } = req.params;
@@ -75,10 +76,41 @@ const getMovie = async (req: Request, res: Response) => {
     }
 }
 
+
+/**
+ * @route GET /movie?search= 
+ * @desc Search movie title
+ * @access public
+ */
+const getMoviesBySearch = async (req: Request, res: Response) => {
+    const { search, option } = req.query;
+
+    const isOptionType = (option: string): option is MovieOptionType => {
+        return ["title", "director", "title_director"].indexOf(option) !== -1; //타입 일치시 true
+    }
+
+    if (!isOptionType(option as string)) {
+        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, message.NULL_VALUE));
+    }
+
+    const page: number = Number(req.query.page || 1);
+
+    try {
+        const data = await MovieService.getMoviesBySearch(search as string, option as MovieOptionType, page);
+
+        res.status(statusCode.OK).send(util.success(statusCode.OK, message.SEARCH_MOVIE_SUCEESS, data));
+    } catch (error) {
+        console.log(error);
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, message.INTERNAL_SERVER_ERROR));
+    }
+}
+
+
+
 /**
  *  @route PUT /movie/:movieId/comments/:commentId
  *  @desc Update Movie Comment
- *  @access Public
+ *  @access public
  */
 const updateMovieComment = async (req: Request, res: Response) => {
     const error = validationResult(req);
@@ -106,5 +138,6 @@ export default {
     createMovie,
     createMovieComment,
     getMovie,
-    updateMovieComment
+    updateMovieComment,
+    getMoviesBySearch
 }

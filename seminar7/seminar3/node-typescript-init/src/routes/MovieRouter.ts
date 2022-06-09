@@ -5,6 +5,8 @@ import auth from "../middleware/auth";
 
 const router: Router = Router();
 
+router.get('/', MovieController.getMoviesBySearch);
+
 router.post('/', [
     body('title').notEmpty(),
     body('director').notEmpty()
