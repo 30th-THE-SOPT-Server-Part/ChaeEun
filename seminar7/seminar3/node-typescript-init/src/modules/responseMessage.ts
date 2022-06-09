@@ -30,6 +30,10 @@ const message = {
     CREATE_MOVIE_SUCESS: '영화 생성 성공',
     CREATE_MOVIE_COMMENT_SUCCESS: '댓글 작성 성공',
     READ_MOVIE_SUCEESS: '영화 조회 성공',  
+    SEARCH_MOVIE_SUCEESS: '영화 검색 성공',
+
+    // file
+    CREATE_FILE_SUCCESS: '파일 업로드 성공',
 }
 
 export default message;
